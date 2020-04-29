@@ -19,7 +19,7 @@ def main():
         os.makedirs(new_datasets)
 
     ham_file_names = os.listdir(ham_set)
-    chunky_ham = chunks(ham_file_names,500)
+    chunky_ham = chunks(ham_file_names,250)
 
     for num, chunk in enumerate(chunky_ham, start= 1):
         sub_directory_name = os.path.join(new_datasets,"ham"+str(num))
@@ -32,7 +32,7 @@ def main():
             shutil.copy(single_path,sub_directory_name)
 
     spam_file_names = os.listdir(spam_set)
-    chunky_spam = chunks(spam_file_names, 100)
+    chunky_spam = chunks(spam_file_names, 50)
 
     for num, chunk in enumerate(chunky_spam, start=1):
         sub_directory_name = os.path.join(new_datasets, "spam" + str(num))
