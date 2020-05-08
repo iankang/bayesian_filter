@@ -186,7 +186,7 @@ def main():
     #initializing empty lists to hold training and testing data respectively
     trainIndex, testIndex = list(), list()
     for i in range(mails.shape[0]):
-        if np.random.uniform(0, 1) < 0.75:
+        if np.random.uniform(0, 1) < 0.80:
             trainIndex += [i]
         else:
             testIndex += [i]
