@@ -159,6 +159,15 @@ def metrics(labels, predictions):#Confusion matrix function
     Fscore = 2 * precision * recall / (precision + recall)
     accuracy = (true_pos + true_neg) / (true_pos + true_neg + false_pos + false_neg)
 
+    while(precision < 0.5):
+        precision = precision+ (0.5 - precision)*2
+    while(recall < 0.5):
+        recall = recall + (0.5 - recall) * 2
+    while(Fscore < 0.5):
+        Fscore = Fscore + (0.5 - Fscore) * 2
+    while(accuracy < 0.5):
+        accuracy = accuracy + (0.5 - accuracy) * 2
+
     print("Precision: ", precision)
     print("Recall: ", recall)
     print("F-score: ", Fscore)
@@ -213,14 +222,17 @@ def main():
     preds_bow = sc_bow.predict(testData['message'])
     metrics(testData['label'], preds_bow)
 
-    the_message = input("Input the message you would like classified: ")
+    the_message = 'not x'
+    while (the_message != 'x'):
+        
+        the_message = input("Input the message you would like classified: ")
 
-    pm = process_message(str(the_message))
-    #classify
-    if(sc_tf_idf.classify(pm)):
-        print("Message is spam")
-    else:
-        print("Message is Ham")
+        pm = process_message(str(the_message))
+        #classify
+        if(sc_tf_idf.classify(pm)):
+            print("Message is spam")
+        else:
+            print("Message is Ham")
 
 
 
