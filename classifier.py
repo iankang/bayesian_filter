@@ -266,8 +266,10 @@ def main():
     # here you run the datasets sequentially for validation by specifying file name.
 
     data = pd.DataFrame({'message': [], 'label': []})
-    data = data.append(dataFrameFromDirectory("datasets/ham3", 0))
-    data = data.append(dataFrameFromDirectory("datasets/spam3", 1))
+    ham_folder = input("input ham folder name: ")
+    spam_folder = input("input spam folder name: ")
+    data = data.append(dataFrameFromDirectory("datasets/"+str(ham_folder), 0))
+    data = data.append(dataFrameFromDirectory("datasets/"+ str(spam_folder), 1))
 
 
     # The below cell shows the number of rows in our dataframe.
@@ -306,7 +308,7 @@ def main():
     # here we  apply the scraping function to our data. hence cleaning it.
     train_data['message'] = train_data.apply(func, axis=1)
     test_data['message'] = test_data.apply(func, axis=1)
-    train_data  # its just expecting the data to come from a website and not a dataframe.
+    # its just expecting the data to come from a website and not a dataframe.
 
 
 
@@ -316,6 +318,7 @@ def main():
     train_data.reset_index(drop=True, inplace=True)
     test_data.reset_index(drop=True, inplace=True)
 
+    print("processing for bow....")
     train_data['message'].str.isalnum()
     # this checks for the metrics
     sc_bow = SpamClassifier(train_data, 'bow')
@@ -323,15 +326,19 @@ def main():
     preds_bow = sc_bow.predict(test_data['message'])
     metrics(test_data['label'], preds_bow)
 
+    print("processing for tf-idf....")
     # this checks for the metrics based on tf-idf
     sc_tf_idf = SpamClassifier(train_data, 'tf-idf')
     sc_tf_idf.train()
     preds_tf_idf = sc_tf_idf.predict(test_data['message'])
     metrics(test_data['label'], preds_tf_idf)
 
-    pm = process_message(
-        "No, this isn't a reference for the website which you used. Your reference implies that you are paraphrasing information from the actual article which clearly you are not doing.")
-    print(sc_tf_idf.classify(pm))
+    message = input("input the message to be classified: ")
+    pm = process_message(str(message))
+    if(sc_tf_idf.classify(pm)):
+        print("The message is spam")
+    else:
+        print("The message is ham")
 
 
 if __name__ == '__main__':
