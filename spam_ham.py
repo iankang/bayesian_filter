@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import re
 from sklearn.utils import shuffle
+from spam_lists import SPAMHAUS_DBL
 
 
 #tokenizing and processing the words harnessed.
@@ -173,7 +174,11 @@ def metrics(labels, predictions):#Confusion matrix function
     print("F-score: ", Fscore)
     print("Accuracy: ", accuracy)
 
-
+# the following function uses a regular expression to extract links from plain messages. The extracted urls will be tested if they are spam.
+def extract_url(myString):
+    links = re.findall(r'(https?://[^\s]+)', myString)
+    links = tuple(links)
+    return links
 
 def main():
 
@@ -226,14 +231,26 @@ def main():
     while (the_message != 'x'):
         
         the_message = input("Input the message you would like classified: ")
+        the_message = str(the_message)
 
-        pm = process_message(str(the_message))
+        pm = process_message(the_message)
         #classify
         if(sc_tf_idf.classify(pm)):
             print("Message is spam")
         else:
             print("Message is Ham")
 
+        #classifying the links
+        available_links = extract_url(the_message)
+        if(len(available_links)>0):
+            if(SPAMHAUS_DBL.any_match(available_links)):
+                result = SPAMHAUS_DBL.filter_matching(available_links)
+                print("these are the spam links: ")
+                print(list(result))
+            else:
+                print("No spam links found")
+        else:
+            print("no links found")
 
 
 
