@@ -9,9 +9,11 @@ from wordcloud import WordCloud
 from math import log, sqrt
 import pandas as pd
 import numpy as np
+import datetime
 import re
 from sklearn.utils import shuffle
 from spam_lists import SPAMHAUS_DBL
+
 
 
 #tokenizing and processing the words harnessed.
@@ -146,7 +148,21 @@ class SpamClassifier(object):
             result[i] = int(self.classify(processed_message))
         return result
 
+    def bow_results_tally(df):
+        
+        pm = process_message(df['message'])
 
+        if(sc_bow.classify(pm)):
+            return 1
+        else:
+            return 0
+    def sc_results_tally(df):
+    
+        pm = process_message(df['message'])
+        if(sc_tf_idf.classify(pm)):
+            return  1
+        else:
+            return  0       
 
 def metrics(labels, predictions):#Confusion matrix function
     true_pos, true_neg, false_pos, false_neg = 0, 0, 0, 0
@@ -226,6 +242,25 @@ def main():
     sc_bow.train()
     preds_bow = sc_bow.predict(testData['message'])
     metrics(testData['label'], preds_bow)
+
+    results_df = testData[['message','label']]
+    results_df['bow_results'] = testData.apply(bow_results_tally, axis = 1)
+    results_df['sc_results'] = testData.apply(sc_results_tally, axis = 1)
+    the_path = os.path.join(os.getcwd(),'results')
+
+    if (not os.path.exists(the_path)):
+        os.mkdir(os.path.join(os.getcwd(),'results'))
+        
+    results_df.to_csv(os.path.join(the_path,datetime.date.today().strftime("%I:%M%p on %B %d, %Y")+ '_results.csv'))
+    
+    println("this is the distribution of results using bow.")
+    println(results_df['bow_results'].value_counts())
+
+    println("this is the distribution of results from the original dataset")
+    println(results_df['label'].value_counts())
+
+    println("this is the distribution of results from the sc_tf_idf method")
+    println(results_df['sc_results'].value_counts())
 
     the_message = 'not x'
     while (the_message != 'x'):
